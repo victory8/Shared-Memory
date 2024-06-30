@@ -13,7 +13,7 @@ int mySharedMemory::write(const char* data, size_t size) {
   std::lock_guard<std::mutex> lock(mutex);
 
   if (size > blockSize) {
-    return -1; // Verilen data bloğun boyutundan büyük olamaz
+    return -1;
   }
 
   std::memcpy(memory[writeIndex].data(), data, size);
@@ -26,16 +26,16 @@ int mySharedMemory::read(char* buffer, size_t bufferSize) {
   std::lock_guard<std::mutex> lock(mutex);
 
   if (readIndex == writeIndex) {
-    return 0; // Okunacak yeni data yok
+    return 0;
   }
 
   if (bufferSize < dataSize[readIndex]) {
-    return -1; // Verilen buffer, blokta yazan datadan küçük olamaz
+    return -1;
   }
 
   std::memcpy(buffer, memory[readIndex].data(), dataSize[readIndex]);
   int bytesRead = dataSize[readIndex];
-  dataSize[readIndex] = 0; // Blok boşaltıldığında, boyut sıfırlanır
+  dataSize[readIndex] = 0;
   readIndex = (readIndex + 1) % blockCount;
   return bytesRead;
 }
